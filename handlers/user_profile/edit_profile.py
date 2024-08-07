@@ -1,7 +1,7 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ContentType, ReplyKeyboardRemove
 
-from lexicon.lexicon_ru import lexicon
+from lexicon.lexicon_ru import lexicon, banned_words
 from keyboards.buttons_text import buttons_text
 from handlers.user_profile.view_profile import view_profile_setting
 from handlers.states.state_editing import EditingStateGroup
@@ -72,6 +72,10 @@ async def edit_profile_buttons_handler(message: Message, state: FSMContext):
 
 
 async def change_name(message: Message, state: FSMContext):
+    if any(banned_word in message.text.lower() for banned_word in banned_words):
+        await message.answer(lexicon['data_security_error'])
+        return
+
     data = await state.get_data()
     go_back = data['go_back']
     if message.text != buttons_text['leave_as_is']:
@@ -130,6 +134,10 @@ async def change_gender(message: Message, state: FSMContext):
 
 async def change_university(message: Message, state: FSMContext):
     # TODO: Add check for university
+    if any(banned_word in message.text.lower() for banned_word in banned_words):
+        await message.answer(lexicon['data_security_error'])
+        return
+
     data = await state.get_data()
     go_back = data['go_back']
     if message.text != buttons_text['leave_as_is']:
@@ -196,6 +204,10 @@ async def change_study_year(message: Message, state: FSMContext):
 
 
 async def change_major(message: Message, state: FSMContext):
+    if any(banned_word in message.text.lower() for banned_word in banned_words):
+        await message.answer(lexicon['data_security_error'])
+        return
+
     data = await state.get_data()
     go_back = data['go_back']
     if message.text != buttons_text['leave_as_is']:
@@ -262,6 +274,10 @@ async def change_media_buttons_handler(message: Message, state: FSMContext):
 
 
 async def change_description(message: Message, state: FSMContext):
+    if any(banned_word in message.text.lower() for banned_word in banned_words):
+        await message.answer(lexicon['data_security_error'])
+        return
+
     if message.text != buttons_text['leave_as_is']:
         await commands.edit_user_description(message.from_user.id, message.text)
     await view_profile_setting(message, state)

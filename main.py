@@ -14,10 +14,10 @@ async def main():
     await on_startup(dp)
 
     # удаление данных
-    await db.gino.drop_all()
+    # await db.gino.drop_all()
 
     # создание таблиц
-    await db.gino.create()
+    # await db.gino.create()
 
     bot_commands = (
         ("start", "Найти знакомства!"),

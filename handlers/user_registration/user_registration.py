@@ -4,7 +4,7 @@ from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery, ContentTy
 from handlers.states.state_user_registration import UserRegistrationStateGroup
 from handlers.states.state_user_prefs_registration import UserPrefsRegistrationStateGroup
 import utils.db_api.quick_commands as commands
-from lexicon.lexicon_ru import lexicon
+from lexicon.lexicon_ru import lexicon, banned_words
 import keyboards.layouts as keyboards
 from keyboards.buttons_text import buttons_text
 
@@ -27,6 +27,10 @@ async def process_age(message: Message, state: FSMContext):
 
 
 async def process_name(message: Message, state: FSMContext):
+    if any(banned_word in message.text.lower() for banned_word in banned_words):
+        await message.answer(lexicon['data_security_error'])
+        return
+
     if not message.text.isalpha():
         await message.answer(lexicon['incorrect_name_format'], reply_markup=ReplyKeyboardRemove())
         return
@@ -53,6 +57,10 @@ async def process_gender(callback: CallbackQuery, state: FSMContext, gender: str
 
 async def process_university(message: Message, state: FSMContext):
     # TODO: Add check for university
+    if any(banned_word in message.text.lower() for banned_word in banned_words):
+        await message.answer(lexicon['data_security_error'])
+        return
+
     await state.update_data(university=message.text)
 
     await message.answer(lexicon['degree'], reply_markup=keyboards.degree_kb_inline)
@@ -101,6 +109,10 @@ async def process_study_year(message: Message, state: FSMContext):
 
 
 async def process_major(message: Message, state: FSMContext):
+    if any(banned_word in message.text.lower() for banned_word in banned_words):
+        await message.answer(lexicon['data_security_error'])
+        return
+
     await state.update_data(major=message.text)
     await message.answer(lexicon['media'])
     await state.set_state(UserRegistrationStateGroup.wait_media)
@@ -143,6 +155,10 @@ async def process_media_buttons_handler(message: Message, state: FSMContext):
 
 
 async def process_description(message: Message, state: FSMContext):
+    if any(banned_word in message.text.lower() for banned_word in banned_words):
+        await message.answer(lexicon['data_security_error'])
+        return
+
     try:
         await state.update_data(description=message.text)
         await state.update_data(tg_username=message.from_user.username)
